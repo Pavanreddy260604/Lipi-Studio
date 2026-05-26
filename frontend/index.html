@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Lipi Studio" />
+  
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0f14" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+  <title>Lipi Studio | Free AI Screenplay Writer & Formatting Tool</title>
+  <meta name="description" content="Write, structure, and format professional screenplays with Lipi Studio. A premium, free AI script editor with automatic formatting, scene organization, and master script exports." />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://lipistudio.me/" />
+  <meta property="og:title" content="Lipi Studio | Free AI Screenplay Writer & Formatting Tool" />
+  <meta property="og:description" content="Write, structure, and format professional screenplays with Lipi Studio. A premium, free AI script editor with automatic formatting, scene organization, and master script exports." />
+  <meta property="og:image" content="https://lipistudio.me/og-image.jpg" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://lipistudio.me/" />
+  <meta property="twitter:title" content="Lipi Studio | Free AI Screenplay Writer & Formatting Tool" />
+  <meta property="twitter:description" content="Write, structure, and format professional screenplays with Lipi Studio. A premium, free AI script editor with automatic formatting, scene organization, and master script exports." />
+  <meta property="twitter:image" content="https://lipistudio.me/og-image.jpg" />
+
+  <!-- JSON-LD Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Lipi Studio",
+    "operatingSystem": "Web",
+    "applicationCategory": "WritingApplication",
+    "description": "An intelligent writing studio that helps you craft, structure, and polish professional screenplays with AI assistance.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "url": "https://lipistudio.me"
+  }
+  </script>
+  <script>
+    // Prevent flash of unstyled content: set theme before first paint
+    (function () {
+      try {
+        // Theme Persistence
+        var themeStored = JSON.parse(localStorage.getItem('theme-storage') || '{}');
+        var theme = (themeStored.state && themeStored.state.theme) || 'dark';
+        document.documentElement.classList.add(theme);
+
+        // Accent Persistence (Pre-boot injection)
+        var uiStored = JSON.parse(localStorage.getItem('crystal-ui-state') || '{}');
+        var accentId = (uiStored.state && uiStored.state.accentColor) || 'terracotta';
+        
+        // Define fallback map (must match accents.ts)
+        var accentMap = {
+          terracotta: '0.7 0.16 35',
+          orange: '0.75 0.18 50',
+          gold: '0.75 0.18 85',
+          forest: '0.65 0.14 150',
+          ocean: '0.65 0.14 250',
+          violet: '0.65 0.15 300',
+          ruby: '0.55 0.15 25'
+        };
+        
+        var oklch = accentMap[accentId] || accentMap.terracotta;
+        document.documentElement.style.setProperty('--accent', 'oklch(' + oklch + ')');
+        document.documentElement.style.setProperty('--brand-primary', 'oklch(' + oklch + ')');
+      } catch (e) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

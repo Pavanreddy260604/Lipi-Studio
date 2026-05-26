@@ -1,0 +1,216 @@
+/* ─── Auth Pages — Login & Register ─── */
+/* Premium, minimal, dark academic aesthetic. No glassmorphism, no gradient text. */
+
+.auth-page {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  width: 100%;
+  padding: var(--space-6);
+  background: var(--surface-page);
+  overflow: hidden;
+}
+
+/* Subtle radial glow behind the form — not a gradient overlay, just ambient light */
+.auth-page__ambient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 600px 400px at 50% 35%, color-mix(in oklch, var(--accent) 4%, transparent), transparent),
+    radial-gradient(ellipse 800px 600px at 30% 70%, oklch(0.12 0.02 250 / 0.3), transparent);
+}
+
+.auth-page__container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  z-index: 1;
+}
+
+.auth-page__container--wide {
+  max-width: 440px;
+}
+
+/* ─── Logo Mark ─── */
+.auth-page__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-xl);
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+/* ─── Typography ─── */
+.auth-page__title {
+  font-family: var(--font-sans);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  color: var(--text-heading);
+}
+
+.auth-page__subtitle {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 450;
+  color: var(--text-tertiary);
+  line-height: var(--leading-normal);
+}
+
+/* ─── Card ─── */
+.auth-page__card {
+  padding: var(--space-8);
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-2xl);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 0 1px var(--border-subtle);
+}
+
+/* ─── Input (custom password fields that bypass the Input component) ─── */
+.auth-page__input {
+  width: 100%;
+  min-height: var(--touch-target-min);
+  font-size: var(--text-sm);
+  padding-left: var(--space-12);
+  padding-right: var(--space-12);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-input);
+  background: var(--surface-hover);
+  color: var(--text-heading);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-page__input::placeholder {
+  color: var(--text-placeholder);
+}
+
+.auth-page__input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent) 10%, transparent);
+}
+
+/* ─── Error Banner ─── */
+.auth-page__error {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in oklch, var(--status-error) 20%, transparent);
+  background: color-mix(in oklch, var(--status-error) 6%, transparent);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--status-error);
+  line-height: var(--leading-normal);
+}
+
+/* ─── Submit Button ─── */
+.auth-page__submit {
+  width: 100%;
+  min-height: var(--touch-target-min);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  margin-top: var(--space-1);
+}
+
+/* ─── Password Strength Indicator ─── */
+.auth-page__strength {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--surface-hover);
+  border: 1px solid var(--border-subtle);
+}
+
+.auth-page__strength-track {
+  display: flex;
+  gap: 3px;
+}
+
+.auth-page__strength-segment {
+  flex: 1;
+  height: 3px;
+  border-radius: var(--radius-full);
+  background: var(--border-subtle);
+  transition: background-color 0.25s ease;
+}
+
+.auth-page__strength-segment--weak {
+  background: var(--status-error);
+}
+
+.auth-page__strength-segment--medium {
+  background: var(--status-warning);
+}
+
+.auth-page__strength-segment--strong {
+  background: var(--status-success);
+}
+
+.auth-page__strength-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+}
+
+.auth-page__strength-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.auth-page__strength-label--valid {
+  color: var(--status-success);
+}
+
+/* ─── Footer ─── */
+.auth-page__footer {
+  text-align: center;
+  font-size: var(--text-sm);
+  font-weight: 450;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 480px) {
+  .auth-page {
+    padding: var(--space-4);
+    align-items: flex-start;
+    padding-top: max(env(safe-area-inset-top, 0px), var(--space-12));
+  }
+
+  .auth-page__card {
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+  }
+
+  .auth-page__title {
+    font-size: var(--text-xl);
+  }
+}
+
+/* ─── Light Theme Overrides ─── */
+:root.light .auth-page__ambient {
+  background:
+    radial-gradient(ellipse 600px 400px at 50% 35%, color-mix(in oklch, var(--accent) 4%, transparent), transparent),
+    radial-gradient(ellipse 800px 600px at 30% 70%, oklch(0.92 0.02 65 / 0.3), transparent);
+}
+
+:root.light .auth-page__card {
+  box-shadow:
+    0 2px 12px oklch(0.1 0.01 50 / 0.06),
+    0 0 0 1px oklch(0.1 0.01 50 / 0.05);
+}

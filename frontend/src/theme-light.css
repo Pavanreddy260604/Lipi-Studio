@@ -1,0 +1,64 @@
+/* ─── The Inkwell — Light Theme ─── */
+/* Warm cream surfaces, espresso text, terracotta accent */
+
+:root.light {
+  color-scheme: light;
+
+  /* ─── Surfaces ─── */
+  --surface-page: oklch(0.93 0.008 65);
+  --surface-elevated: oklch(0.985 0.006 65);
+  --surface-hover: oklch(0.95 0.008 65);
+  --surface-active: oklch(0.91 0.01 65);
+  --surface-sidebar: oklch(0.89 0.008 65);
+  --surface-overlay: oklch(0 0 0 / 0.3);
+
+  /* ─── Text ─── */
+  --text-body: oklch(0.1 0.01 50);
+  --text-heading: oklch(0.06 0.012 50);
+  --text-secondary: oklch(0.15 0.008 50);
+  --text-tertiary: oklch(0.25 0.006 50);
+  --text-placeholder: oklch(0.4 0.006 50);
+  --text-on-accent: oklch(0.1 0.01 50);
+
+  /* ─── Accent ─── */
+  --accent: oklch(0.65 0.14 35);
+  --accent-hover: oklch(0.6 0.16 35);
+  --accent-soft: color-mix(in oklch, var(--accent) 10%, transparent);
+  --accent-rgb: 215, 80, 60;
+  --accent-primary: var(--accent);
+  --accent-primary-rgb: var(--accent-rgb);
+
+  /* Legacy Bridge */
+  --brand-primary: var(--accent);
+  --brand-soft: var(--accent-soft);
+  --brand-primary-rgb: var(--accent-rgb);
+
+  /* ─── Borders ─── */
+  --border-subtle: oklch(0.1 0.01 50 / 0.1);
+  --border-strong: oklch(0.1 0.01 50 / 0.18);
+  --border-accent: color-mix(in oklch, var(--accent) 20%, transparent);
+  --border-input: oklch(0.1 0.01 50 / 0.15);
+
+  /* ─── Status ─── */
+  --status-success: oklch(0.55 0.12 150);
+  --status-success-soft: oklch(0.55 0.12 150 / 0.08);
+  --status-warning: oklch(0.65 0.1 80);
+  --status-warning-soft: oklch(0.65 0.1 80 / 0.08);
+  --status-error: oklch(0.5 0.14 25);
+  --status-error-soft: oklch(0.5 0.14 25 / 0.08);
+  --status-info: oklch(0.55 0.08 220);
+  --status-info-soft: oklch(0.55 0.08 220 / 0.08);
+
+  /* ─── Shadows ─── */
+  --shadow-sm: 0 1px 2px oklch(0.1 0.01 50 / 0.06);
+  --shadow-md: 0 2px 8px oklch(0.1 0.01 50 / 0.08);
+  --shadow-lg: 0 4px 16px oklch(0.1 0.01 50 / 0.1);
+  --shadow-xl: 0 8px 32px oklch(0.1 0.01 50 / 0.12);
+
+  /* ─── Focus ─── */
+  --focus-ring: 0 0 0 2px var(--surface-page), 0 0 0 4px var(--accent);
+
+  /* ─── Misc ─── */
+  --selection-bg: color-mix(in oklch, var(--accent) 16%, transparent);
+  --noise-opacity: 0.02;
+}

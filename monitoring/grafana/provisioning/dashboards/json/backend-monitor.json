@@ -1,0 +1,274 @@
+{
+  "title": "Backend Monitor",
+  "uid": "backend-monitor",
+  "tags": ["backend"],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "version": 1,
+  "refresh": "15s",
+  "panels": [
+    {
+      "title": "CPU Lag",
+      "type": "gauge",
+      "gridPos": {"h": 8, "w": 4, "x": 0, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "min": 0, "max": 100, "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "orange", "value": 50},
+              {"color": "red", "value": 80}
+            ]
+          }
+        }
+      },
+      "targets": [{"expr": "avg(nodejs_event_loop_lag_seconds) * 100", "legendFormat": "Event Loop Lag"}]
+    },
+    {
+      "title": "Memory",
+      "type": "gauge",
+      "gridPos": {"h": 8, "w": 4, "x": 4, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "min": 0, "unit": "bytes",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "orange", "value": 104857600},
+              {"color": "red", "value": 209715200}
+            ]
+          }
+        }
+      },
+      "targets": [{"expr": "process_resident_memory_bytes", "legendFormat": "RSS"}]
+    },
+    {
+      "title": "Heap",
+      "type": "gauge",
+      "gridPos": {"h": 8, "w": 4, "x": 8, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "min": 0, "unit": "bytes",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "orange", "value": 52428800},
+              {"color": "red", "value": 104857600}
+            ]
+          }
+        }
+      },
+      "targets": [{"expr": "nodejs_heap_size_used_bytes", "legendFormat": "Heap Used"}]
+    },
+    {
+      "title": "Requests (last 5m)",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 4, "x": 12, "y": 0},
+      "fieldConfig": {"defaults": {"unit": "none"}},
+      "targets": [{"expr": "sum(increase(app_http_requests_total[5m]))", "legendFormat": "Total"}]
+    },
+    {
+      "title": "Errors (last 5m)",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 4, "x": 16, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {"mode": "fixed", "fixedColor": "red"}
+        }
+      },
+      "targets": [{"expr": "sum(increase(app_http_requests_total{status=~\"5..\"}[5m]))", "legendFormat": "Errors"}]
+    },
+    {
+      "title": "4xx (last 5m)",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 4, "x": 20, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {"mode": "fixed", "fixedColor": "orange"}
+        }
+      },
+      "targets": [{"expr": "sum(increase(app_http_requests_total{status=~\"4..\"}[5m]))", "legendFormat": "4xx"}]
+    },
+
+    {
+      "title": "Request Rate by Endpoint",
+      "type": "timeseries",
+      "gridPos": {"h": 10, "w": 12, "x": 0, "y": 8},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {"showPoints": "never"},
+          "max": 10
+        }
+      },
+      "targets": [{
+        "expr": "sum(rate(app_http_requests_total{route!~\"__.*\"}[$__rate_interval])) by (route)",
+        "legendFormat": "{{route}}"
+      }]
+    },
+    {
+      "title": "P95 Latency by Endpoint",
+      "type": "timeseries",
+      "gridPos": {"h": 10, "w": 12, "x": 12, "y": 8},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {"showPoints": "never"}
+        }
+      },
+      "targets": [{
+        "expr": "histogram_quantile(0.95, sum(rate(app_http_request_duration_seconds_bucket{route!~\"__.*\"}[$__rate_interval])) by (le, route))",
+        "legendFormat": "{{route}}"
+      }]
+    },
+    {
+      "title": "Error Rate by Endpoint",
+      "type": "timeseries",
+      "gridPos": {"h": 10, "w": 12, "x": 0, "y": 18},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {"showPoints": "never"}
+        }
+      },
+      "targets": [{
+        "expr": "sum(rate(app_http_requests_total{status=~\"5..\",route!~\"__.*\"}[$__rate_interval])) by (route)",
+        "legendFormat": "{{route}}"
+      }]
+    },
+    {
+      "title": "P99 Latency by Endpoint",
+      "type": "timeseries",
+      "gridPos": {"h": 10, "w": 12, "x": 12, "y": 18},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {"showPoints": "never"}
+        }
+      },
+      "targets": [{
+        "expr": "histogram_quantile(0.99, sum(rate(app_http_request_duration_seconds_bucket{route!~\"__.*\"}[$__rate_interval])) by (le, route))",
+        "legendFormat": "{{route}}"
+      }]
+    },
+    {
+      "title": "Status Code Distribution",
+      "type": "piechart",
+      "gridPos": {"h": 8, "w": 6, "x": 0, "y": 28},
+      "fieldConfig": {
+        "defaults": {"unit": "none"}
+      },
+      "targets": [{
+        "expr": "sum(increase(app_http_requests_total[5m])) by (status)",
+        "legendFormat": "{{status}}"
+      }]
+    },
+    {
+      "title": "Endpoint Latency Table",
+      "type": "table",
+      "gridPos": {"h": 8, "w": 10, "x": 6, "y": 28},
+      "fieldConfig": {
+        "defaults": {
+          "custom": {"align": "auto"},
+          "unit": "s"
+        }
+      },
+      "targets": [{
+        "expr": "histogram_quantile(0.50, sum(rate(app_http_request_duration_seconds_bucket[5m])) by (le, route)) or histogram_quantile(0.95, sum(rate(app_http_request_duration_seconds_bucket[5m])) by (le, route)) or histogram_quantile(0.99, sum(rate(app_http_request_duration_seconds_bucket[5m])) by (le, route))",
+        "format": "table",
+        "instant": true,
+        "legendFormat": "{{route}}"
+      }]
+    },
+    {
+      "title": "Slowest Endpoints (avg > 500ms)",
+      "type": "table",
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 28},
+      "fieldConfig": {
+        "defaults": {
+          "custom": {"align": "auto"},
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "orange", "value": 0.5},
+              {"color": "red", "value": 2}
+            ]
+          }
+        }
+      },
+      "targets": [{
+        "expr": "sum(rate(app_http_request_duration_seconds_sum[5m])) by (route) / sum(rate(app_http_request_duration_seconds_count[5m])) by (route) > 0.5",
+        "format": "table",
+        "instant": true,
+        "legendFormat": "{{route}}"
+      }]
+    },
+
+    {
+      "title": "Active Users",
+      "type": "stat",
+      "gridPos": {"h": 6, "w": 3, "x": 0, "y": 36},
+      "fieldConfig": {"defaults": {"unit": "none", "color": {"mode": "fixed", "fixedColor": "blue"}}},
+      "targets": [{"expr": "app_active_users_total", "legendFormat": "Users"}]
+    },
+    {
+      "title": "Projects",
+      "type": "stat",
+      "gridPos": {"h": 6, "w": 3, "x": 3, "y": 36},
+      "fieldConfig": {"defaults": {"unit": "none", "color": {"mode": "fixed", "fixedColor": "purple"}}},
+      "targets": [{"expr": "app_total_projects", "legendFormat": "Projects"}]
+    },
+    {
+      "title": "Scenes",
+      "type": "stat",
+      "gridPos": {"h": 6, "w": 3, "x": 6, "y": 36},
+      "fieldConfig": {"defaults": {"unit": "none", "color": {"mode": "fixed", "fixedColor": "green"}}},
+      "targets": [{"expr": "app_total_scenes", "legendFormat": "Scenes"}]
+    },
+    {
+      "title": "RLHF Feedbacks",
+      "type": "stat",
+      "gridPos": {"h": 6, "w": 3, "x": 9, "y": 36},
+      "fieldConfig": {"defaults": {"unit": "none", "color": {"mode": "fixed", "fixedColor": "orange"}}},
+      "targets": [{"expr": "app_rlhf_feedbacks_total", "legendFormat": "Feedbacks"}]
+    },
+    {
+      "title": "RLHF Accuracy",
+      "type": "gauge",
+      "gridPos": {"h": 6, "w": 3, "x": 12, "y": 36},
+      "fieldConfig": {
+        "defaults": {
+          "min": 0, "max": 100, "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null},
+              {"color": "orange", "value": 70},
+              {"color": "red", "value": 50}
+            ]
+          }
+        }
+      },
+      "targets": [{"expr": "app_rlhf_accuracy_percent", "legendFormat": "Accuracy"}]
+    },
+    {
+      "title": "Users & Projects Over Time",
+      "type": "timeseries",
+      "gridPos": {"h": 6, "w": 9, "x": 15, "y": 36},
+      "fieldConfig": {"defaults": {"custom": {"showPoints": "never"}}},
+      "targets": [
+        {"expr": "app_active_users_total", "legendFormat": "Users"},
+        {"expr": "app_total_projects", "legendFormat": "Projects"},
+        {"expr": "app_total_scenes", "legendFormat": "Scenes"}
+      ]
+    }
+  ]
+}

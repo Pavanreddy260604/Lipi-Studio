@@ -1,0 +1,17 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: script-editor-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./qdrant_data:/qdrant/storage
+    restart: always
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: script-editor-redis
+    ports:
+      - "6379:6379"
+    restart: always
