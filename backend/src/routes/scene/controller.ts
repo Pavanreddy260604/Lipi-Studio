@@ -18,7 +18,7 @@ export async function createScene(req: Request, res: Response, _next: NextFuncti
     const { bibleId, slugline, summary, sequenceNumber } = req.body;
     if (!bibleId || typeof bibleId !== 'string') return res.status(400).json({ error: 'Bible ID is required and must be a string' });
     if (!slugline || typeof slugline !== 'string' || slugline.trim().length === 0) return res.status(400).json({ error: 'Slugline is required and cannot be empty' });
-    if (!/^(INT\.|EXT\.|INT\.\/EXT\.|I\/E\.)\s+.+$/i.test(slugline.trim())) return res.status(400).json({ error: 'Invalid slugline format. Expected format: "INT. LOCATION - TIME" or "EXT. LOCATION - TIME"' });
+    if (!/^(?:INT\.|EXT\.|INT\.\/EXT\.|I\/E\.)\s[^\r\n]+$/i.test(slugline.trim())) return res.status(400).json({ error: 'Invalid slugline format. Expected format: "INT. LOCATION - TIME" or "EXT. LOCATION - TIME"' });
     if (sequenceNumber !== undefined && (!Number.isInteger(sequenceNumber) || sequenceNumber < 1)) return res.status(400).json({ error: 'Sequence number must be a positive integer' });
     if (summary && typeof summary === 'string' && summary.length > 2000) return res.status(400).json({ error: 'Summary must be less than 2000 characters' });
     try {
@@ -89,7 +89,7 @@ export async function updateScene(req: Request, res: Response, _next: NextFuncti
         if (updateData.slugline === '' || updateData.summary === '') {
             return res.status(400).json({ error: 'slugline and summary cannot be empty' });
         }
-        if (typeof updateData.slugline === 'string' && !/^(INT\.|EXT\.|INT\.\/EXT\.|I\/E\.)\s+.+$/i.test(updateData.slugline.trim())) {
+        if (typeof updateData.slugline === 'string' && !/^(?:INT\.|EXT\.|INT\.\/EXT\.|I\/E\.)\s[^\r\n]+$/i.test(updateData.slugline.trim())) {
             return res.status(400).json({ error: 'Invalid slugline format. Expected format: "INT. LOCATION - TIME" or "EXT. LOCATION - TIME"' });
         }
         const updatedScene = await Scene.findByIdAndUpdate(req.params.id, { $set: updateData }, { new: true, runValidators: true });

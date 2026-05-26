@@ -6,6 +6,7 @@ import { vectorService } from '../vector/index.js';
 import { chunkerService, DialogueChunk } from '../chunker/index.js';
 import { Character } from '../../models/Character';
 import type { IngestionResult } from './types.js';
+import { escapeRegExp } from '../../utils/security.js';
 
 export class VoiceService {
     async ingestReferenceMaterial(
@@ -20,6 +21,7 @@ export class VoiceService {
             era?: string;
         }
     ): Promise<IngestionResult> {
+        if (!mongoose.Types.ObjectId.isValid(bibleId)) throw new Error('Invalid bibleId');
         let fullText = await extractTextFromFile(fileBuffer, mimeType, sourceName);
 
         const parseResult = await chunkerService.parseScreenplay(fullText);
@@ -290,7 +292,7 @@ export class VoiceService {
         try {
             const character = await Character.findOne({
                 bibleId: new mongoose.Types.ObjectId(bibleId),
-                name: { $regex: new RegExp(`^${speakerName}$`, 'i') }
+                name: { $regex: new RegExp(`^${escapeRegExp(speakerName)}$`, 'i') }
             });
 
             if (character) {

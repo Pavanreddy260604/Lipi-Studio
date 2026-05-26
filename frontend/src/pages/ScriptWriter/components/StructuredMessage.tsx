@@ -1,6 +1,15 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, BookOpen, Film, PenLine, Lightbulb, Database, GitBranch, FileJson, Brain, Copy, Check, Loader2 } from 'lucide-react';
 
+function isSafeImageUrl(url: string): boolean {
+    try {
+        const parsed = new URL(url, window.location.origin);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:' || parsed.protocol === 'data:';
+    } catch {
+        return false;
+    }
+}
+
 function cleanStreamingText(text: string): string {
     if (!text) return '';
     let cleaned = text;
@@ -261,7 +270,7 @@ const METADATA_SECTIONS = new Set(['THINKING', 'RESEARCH_DISCLOSURE', 'CHARACTER
 
 function renderTextWithImages(text: string) {
     const regex = /!\[(.*?)\]\((.*?)\)/g;
-    const parts = [];
+    const parts: { type: 'image'; alt: string; url: string }[] | string[] = [];
     let lastIndex = 0;
     let match;
 
@@ -273,7 +282,9 @@ function renderTextWithImages(text: string) {
 
         const alt = match[1];
         const url = match[2];
-        parts.push({ type: 'image', alt, url });
+        if (isSafeImageUrl(url)) {
+            parts.push({ type: 'image', alt, url } as any);
+        }
         lastIndex = regex.lastIndex;
     }
 

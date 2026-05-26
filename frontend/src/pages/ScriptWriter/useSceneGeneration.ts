@@ -66,7 +66,12 @@ export function useSceneGeneration({
             const cleanStreamText = (text: string) => {
                 let clean = text;
                 // 1. Strip raw HTML-like tag wrappers (e.g. <center>, </center>, etc.)
-                clean = clean.replace(/<\/?[A-Z_0-9]+>/gi, '');
+                // Loop to handle nested or reconstructed tags after initial removal
+                let prev = '';
+                while (prev !== clean) {
+                    prev = clean;
+                    clean = clean.replace(/<\/?[A-Z_0-9]+>/gi, '');
+                }
                 // 2. Clean Fountain dialogue parentheticals and formatting leaks (e.g. > Dialogue -> Dialogue)
                 clean = clean.replace(/^\s*>\s*/gm, '');
                 return clean;

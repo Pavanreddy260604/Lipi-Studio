@@ -56,11 +56,23 @@ function getRlhfBoostedTemperature(feedbackCount: number, baseTemp: number): num
 
 export async function* generateScript(request: ScriptRequest): AsyncGenerator<string, void, unknown> {
     if (process.env.NODE_ENV !== 'production') { console.log(`[ScriptGen] Building prompt for: ${request.format} / ${request.style}`); }
+    // Validate IDs at entry to prevent NoSQL injection in all downstream queries
+    if (request.bibleId && !mongoose.Types.ObjectId.isValid(request.bibleId)) {
+        throw new Error('Invalid bibleId');
+    }
+    if (request.characterIds) {
+        for (const id of request.characterIds) {
+            if (!mongoose.Types.ObjectId.isValid(id)) throw new Error('Invalid characterId');
+        }
+    }
     if (request.useAdvancedCoherence) {
         yield* generateAdvancedScript(request);
         return;
     }
     let ownerId = request.userId || '000000000000000000000000';
+    if (!mongoose.Types.ObjectId.isValid(ownerId)) {
+        throw new Error('Invalid userId');
+    }
     let targetLanguage = request.language;
     let transliteration = request.transliteration;
     const isSceneScopedGeneration = Boolean(

@@ -1,16 +1,19 @@
 import { Router } from 'express';
+import mongoose from 'mongoose';
 import { characterService } from '../services/character/index.js';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
 import { Bible } from '../models/Bible';
 import { Character } from '../models/Character';
 import { CharacterFeedback } from '../models/CharacterFeedback';
 import { castingDirectorService } from '../services/castingDirector.service.js';
+import { escapeRegExp } from '../utils/security.js';
 
 const router = Router();
 
 router.use(authenticate);
 
 async function assertBibleAccess(bibleId: string, userId?: string) {
+    if (!mongoose.Types.ObjectId.isValid(bibleId)) throw new Error('INVALID_ID');
     const bible = await Bible.findOne({ _id: bibleId, userId });
     if (!bible) {
         throw new Error('ACCESS_DENIED');
@@ -299,7 +302,7 @@ router.post('/bible/:bibleId/bulk-casting', async (req, res) => {
             for (const char of approvedCharacters) {
                 let existing = await Character.findOne({
                     bibleId,
-                    name: { $regex: new RegExp(`^${char.name}$`, 'i') }
+                    name: { $regex: new RegExp(`^${escapeRegExp(char.name)}$`, 'i') }
                 });
                 if (existing) {
                     existing.role = char.role || existing.role;

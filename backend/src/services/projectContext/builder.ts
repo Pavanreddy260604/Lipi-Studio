@@ -4,12 +4,14 @@ import { Character } from '../../models/Character';
 import { LoreEntity } from '../../models/LoreEntity';
 import { LoreRelation } from '../../models/LoreRelation';
 import { ProjectContext } from './types.js';
+import mongoose from 'mongoose';
 
 export async function buildProjectContext(
     bibleId: string,
     currentSequenceNumber?: number,
     activeSceneContent?: string
 ): Promise<ProjectContext> {
+    if (!mongoose.Types.ObjectId.isValid(bibleId)) throw new Error('Invalid bibleId');
     const sceneQuery: any = { bibleId };
     if (currentSequenceNumber) {
         sceneQuery.sequenceNumber = {

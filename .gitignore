@@ -18,3 +18,12 @@ qdrant_data/
 .superpowers/
 .crush/
 .playwright-mcp/
+
+# Scratch & test scripts
+backend/scratch/
+
+# Archives
+*.tar.gz
+
+# Accidental files
+ubuntu@*

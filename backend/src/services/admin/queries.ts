@@ -109,7 +109,7 @@ export async function getMasterScriptValidationReport(scriptId: string, scriptVe
 export async function deleteMasterScript(scriptId: string): Promise<void> {
     const script = await MasterScript.findById(scriptId);
     if (!script) throw new Error('Master script not found');
-    if (process.env.NODE_ENV !== 'production') console.log(`[AdminService] Deleting Master Script: ${script.title}`);
+    if (process.env.NODE_ENV !== 'production') console.log('[AdminService] Deleting Master Script:', script.title);
     try { await vectorService.deleteSamplesByMasterScriptId(scriptId); } catch (err) { console.error(`[AdminService] Error deleting vectors for script ${scriptId}:`, err); }
     await Promise.all([
         VoiceSample.deleteMany({ masterScriptId: scriptId }),
@@ -118,7 +118,7 @@ export async function deleteMasterScript(scriptId: string): Promise<void> {
         IngestionManifest.deleteMany({ targetId: scriptId, jobType: 'master_script' })
     ]);
     await MasterScript.findByIdAndDelete(scriptId);
-    if (process.env.NODE_ENV !== 'production') console.log(`[AdminService] Successfully deleted script: ${script.title}`);
+    if (process.env.NODE_ENV !== 'production') console.log('[AdminService] Successfully deleted script:', script.title);
 }
 
 export async function resolveScriptVersion(scriptId: string, scriptVersion?: string): Promise<string> {

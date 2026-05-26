@@ -4,6 +4,15 @@ import { motion } from 'framer-motion';
 import type { IScene as Scene } from '../../../services/project.api';
 import { projectApi } from '../../../services/project.api';
 
+function isSafeImageUrl(url: string): boolean {
+    try {
+        const parsed = new URL(url, window.location.origin);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    } catch {
+        return false;
+    }
+}
+
 interface ArcEntry {
     characterId: string;
     characterName: string;
@@ -264,7 +273,7 @@ const ReferencePanelInner = ({
 
                             {images.length > 0 ? (
                                 <div className="grid grid-cols-2 gap-2">
-                                    {images.map((url: string, i: number) => (
+                                    {images.filter((url: string) => isSafeImageUrl(url)).map((url: string, i: number) => (
                                         <div key={url || i} className="group relative aspect-square rounded-xl border border-subtle-8 overflow-hidden bg-subtle-2 shadow-sm transition-all hover:border-accent/40">
                                             <img 
                                                 src={url} 

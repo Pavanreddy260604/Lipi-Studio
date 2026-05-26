@@ -5,11 +5,13 @@ import { CHARACTER_DISCOVERY_PROMPT } from '../../prompts/hollywood/index.js';
 import { JSONHelper } from '../parser/jsonHelper.js';
 import mongoose from 'mongoose';
 import { enrichExistingCharacter } from './enricher.js';
+import { escapeRegExp } from '../../utils/security.js';
 
 const SKIP_NAMES = new Set(['A CROWD', 'THE CROWD', 'THE WIND', 'PEOPLE']);
 
 export class CharacterDiscoveryService {
     async discoverAndSave(bibleId: string, text: string): Promise<number> {
+        if (!mongoose.Types.ObjectId.isValid(bibleId)) return 0;
         if (process.env.NODE_ENV !== 'production') { console.log(`[CharacterDiscovery] Scanning text for bibleId ${bibleId}...`); }
 
         try {
@@ -64,7 +66,7 @@ export class CharacterDiscoveryService {
                     const queryId = typeof bibleId === 'string' ? new mongoose.Types.ObjectId(bibleId) : bibleId;
                     const dbChar = await Character.findOne({
                         bibleId: queryId,
-                        name: { $regex: new RegExp(`^${normalizedName}$`, 'i') }
+                        name: { $regex: new RegExp(`^${escapeRegExp(normalizedName)}$`, 'i') }
                     });
                     if (dbChar) {
                         existingChar = dbChar as any;

@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import { treatmentService } from '../services/treatment.service';
 import { beatOrchestratorService } from '../services/beat/index.js';
 import { Treatment } from '../models/Treatment';
@@ -11,6 +12,7 @@ const router = express.Router();
 router.use(authenticate);
 
 async function assertBibleAccess(bibleId: string, userId?: string) {
+    if (!mongoose.Types.ObjectId.isValid(bibleId)) throw new Error('INVALID_ID');
     const bible = await Bible.findOne({ _id: bibleId, userId });
     if (!bible) throw new Error('ACCESS_DENIED');
     return bible;

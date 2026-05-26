@@ -137,7 +137,7 @@ export async function deleteProject(req: Request, res: Response, _next: NextFunc
         try {
             await vectorService.deleteSamplesByBibleId(bibleId);
         } catch (err) {
-            console.error(`[BibleAPI] Qdrant vector deletion failed for bibleId ${bibleId}:`, err);
+            console.error('[BibleAPI] Qdrant vector deletion failed for bibleId:', bibleId, err);
         }
 
         // Run Mongoose deletions in parallel
@@ -166,7 +166,7 @@ export async function deleteProject(req: Request, res: Response, _next: NextFunc
         try {
             await redisCache.delPattern(`*${bibleId}*`);
         } catch (cacheErr) {
-            console.error(`[BibleAPI] Redis cache invalidation failed for bibleId ${bibleId}:`, cacheErr);
+            console.error('[BibleAPI] Redis cache invalidation failed for bibleId:', bibleId, cacheErr);
         }
 
         res.json({

@@ -108,6 +108,7 @@ export function buildBlockConstants(projectDirectives: string, resourcesStr: str
 }
 
 export async function saveTreatment(bibleId: string, logline: string, structureType: string, runningScenes: any[], actsDistribution: any[]) {
+    if (!mongoose.Types.ObjectId.isValid(bibleId)) throw new Error('Invalid bibleId');
     const structuredActs: any[] = actsDistribution.map(act => ({ name: act.name, beats: [] }));
     for (let i = 0; i < runningScenes.length; i++) {
         const scene = runningScenes[i];

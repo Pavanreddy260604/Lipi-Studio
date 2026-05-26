@@ -18,7 +18,8 @@ export class VoyageEmbeddingService {
         this.apiKey = process.env.VOYAGE_API_KEY || '';
         this.model = process.env.VOYAGE_EMBED_MODEL || 'voyage-3';
         if (this.apiKey) {
-            console.log(`  └ Voyage:  model=${this.model}, key=${this.apiKey.slice(0, 8)}..., limit=3 req/min`);
+            const redactedKey = this.apiKey.length > 3 ? `${this.apiKey.slice(0, 3)}${'*'.repeat(8)}` : '***';
+            console.log('  └ Voyage:  model=%s, key=%s, limit=3 req/min', this.model, redactedKey);
         }
     }
 

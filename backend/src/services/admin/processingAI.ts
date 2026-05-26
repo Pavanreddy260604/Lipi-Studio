@@ -33,7 +33,7 @@ export async function startMasterScriptProcessing(scriptId: string): Promise<Sta
     await script.save();
 
     void processMasterScript(scriptId, scriptVersion).catch((error: any) => {
-        console.error(`[AdminService] Background ingestion failed for ${scriptId}:`, error);
+        console.error('[AdminService] Background ingestion failed for %s:', scriptId, error);
     });
 
     return { scriptVersion, gateStatus: 'pending' };

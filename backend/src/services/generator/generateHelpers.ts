@@ -1,8 +1,10 @@
 import { User } from '../../models/User.js';
+import mongoose from 'mongoose';
 import type { Bible } from '../../models/Bible.js';
 
 export async function getUserInterestsForBible(bible?: { userId?: string } | null) {
     if (!bible?.userId) return null;
+    if (!mongoose.Types.ObjectId.isValid(bible.userId)) return null;
     const user = await User.findById(bible.userId).lean();
     return user?.scriptInterests || null;
 }

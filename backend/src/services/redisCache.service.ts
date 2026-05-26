@@ -118,7 +118,8 @@ export class RedisCacheService {
       } catch { /* ignore */ }
     }
     for (const key of this.memoryCache.keys()) {
-      if (key.includes(pattern.replace('*', ''))) this.memoryCache.delete(key);
+      const escaped = pattern.replace(/[*?[\]]/g, '');
+      if (escaped && key.includes(escaped)) this.memoryCache.delete(key);
     }
   }
 

@@ -6,6 +6,7 @@ import { aiServiceManager } from '../aiManager/index.js';
 import { Bible } from '../../models/Bible';
 import { JSONHelper } from '../parser/jsonHelper.js';
 import { CHARACTER_BRAINSTORM_PROMPT } from './prompts.js';
+import { escapeRegExp } from '../../utils/security.js';
 
 export class CharacterService {
 
@@ -52,7 +53,7 @@ export class CharacterService {
         if (data.name && data.bibleId) {
             const existing = await Character.findOne({
                 bibleId: data.bibleId,
-                name: { $regex: new RegExp(`^${data.name.trim()}$`, 'i') }
+                name: { $regex: new RegExp(`^${escapeRegExp(data.name.trim())}$`, 'i') }
             });
             if (existing) {
                 throw new Error(`A character named "${data.name}" already exists in this project.`);
@@ -78,7 +79,7 @@ export class CharacterService {
             if (character && updates.name.toLowerCase() !== character.name.toLowerCase()) {
                 const existing = await Character.findOne({
                     bibleId: character.bibleId,
-                    name: { $regex: new RegExp(`^${updates.name.trim()}$`, 'i') },
+                    name: { $regex: new RegExp(`^${escapeRegExp(updates.name.trim())}$`, 'i') },
                     _id: { $ne: id }
                 });
                 if (existing) {

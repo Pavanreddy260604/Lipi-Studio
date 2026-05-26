@@ -15,12 +15,23 @@ interface GeminiContent {
     parts: GeminiPart[];
 }
 
+const ALLOWED_MODEL_PATTERN = /^[a-zA-Z0-9._-]+$/;
+
+function validateModelName(model: string): string {
+    if (!ALLOWED_MODEL_PATTERN.test(model)) {
+        throw new Error(`Invalid model name: ${model}`);
+    }
+    return model;
+}
+
 export function getUrl(action: 'generateContent' | 'streamGenerateContent', model: string, apiKey: string): string {
-    return `https://generativelanguage.googleapis.com/v1beta/models/${model}:${action}?key=${apiKey}`;
+    const safeModel = validateModelName(model);
+    return `https://generativelanguage.googleapis.com/v1beta/models/${safeModel}:${action}?key=${apiKey}`;
 }
 
 export function getEmbeddingUrl(model: string, apiKey: string): string {
-    return `https://generativelanguage.googleapis.com/v1/models/${model}:embedContent?key=${apiKey}`;
+    const safeModel = validateModelName(model);
+    return `https://generativelanguage.googleapis.com/v1/models/${safeModel}:embedContent?key=${apiKey}`;
 }
 
 export function resolveModel(model?: string, defaultModel?: string): string {

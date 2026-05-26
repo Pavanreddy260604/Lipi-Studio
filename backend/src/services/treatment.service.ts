@@ -91,6 +91,7 @@ export class TreatmentService {
      * Saves a confirmed Treatment to database.
      */
     async saveTreatment(bibleId: string, logline: string, acts: any[], style: string = 'Save The Cat'): Promise<ITreatment> {
+        if (!mongoose.Types.ObjectId.isValid(bibleId)) throw new Error('Invalid bibleId');
         // Validation Fallback: Ensure every beat has the required 'name' and 'description' fields
         const sanitizedActs = acts.map(act => ({
             ...act,

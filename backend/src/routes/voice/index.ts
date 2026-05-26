@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import mongoose from 'mongoose';
+import rateLimit from 'express-rate-limit';
 import { voiceService } from '../../services/voice/index.js';
 import { vectorService } from '../../services/vector/index.js';
 import { authenticate } from '../../middleware/auth.js';
@@ -9,7 +10,14 @@ import { upload, validateSourceParam } from './config.js';
 
 const router = Router();
 
+const voiceRateLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 10,
+    message: { success: false, error: 'Too many voice requests, please try again later.' }
+});
+
 router.use(authenticate);
+router.use(voiceRateLimiter);
 
 router.post('/ingest', upload.single('file'), async (req, res) => {
     try {

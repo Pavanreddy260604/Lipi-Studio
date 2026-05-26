@@ -10,6 +10,7 @@ export class VersionControlService {
         description?: string,
         branch: string = 'main',
     ) {
+        if (!mongoose.Types.ObjectId.isValid(bibleId)) throw new Error('Invalid bibleId');
         const scenes = await Scene.find({ bibleId }).sort({ sequenceNumber: 1 });
         const bible = await Bible.findById(bibleId);
         if (!bible) throw new Error('Bible not found');

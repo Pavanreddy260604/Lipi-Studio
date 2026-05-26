@@ -48,17 +48,23 @@ export class GeAuditService {
             expectedChunkCount: rows.length,
             rows
         };
+        const safeMasterScriptId = masterScriptId.replace(/[^a-zA-Z0-9_-]/g, '');
+        const safeScriptVersion = scriptVersion.replace(/[^a-zA-Z0-9._-]/g, '');
         const tempPath = path.join(
             os.tmpdir(),
-            `ge_audit_${masterScriptId}_${scriptVersion}_${Date.now()}.json`
+            `ge_audit_${safeMasterScriptId}_${safeScriptVersion}_${Date.now()}.json`
         );
+        const resolvedTemp = path.resolve(tempPath);
+        if (!resolvedTemp.startsWith(path.resolve(os.tmpdir()))) {
+            return { status: 'failed', checkedAt, command: '', summary: 'GE audit failed: invalid path parameters.' };
+        }
 
-        fs.writeFileSync(tempPath, JSON.stringify(payload));
+        fs.writeFileSync(resolvedTemp, JSON.stringify(payload));
 
         try {
             const stdout = configuredCommand
-                ? (await execFileAsync(configuredCommand, ['--input', tempPath], { timeout: 60_000 })).stdout
-                : (await execFileAsync('python', [defaultScriptPath, '--input', tempPath], { timeout: 60_000 })).stdout;
+                ? (await execFileAsync(configuredCommand, ['--input', resolvedTemp], { timeout: 60_000 })).stdout
+                : (await execFileAsync('python', [defaultScriptPath, '--input', resolvedTemp], { timeout: 60_000 })).stdout;
             const parsed = this.parseAuditOutput(stdout);
 
             if (!parsed) {
@@ -86,7 +92,7 @@ export class GeAuditService {
             };
         } finally {
             try {
-                fs.unlinkSync(tempPath);
+                fs.unlinkSync(resolvedTemp);
             } catch {
                 // Ignore cleanup failure; temp file is non-critical.
             }

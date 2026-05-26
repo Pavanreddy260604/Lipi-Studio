@@ -55,13 +55,16 @@ router.post('/ingest', upload.single('file'), async (req, res) => {
             return res.status(400).json({ success: false, error: 'Missing file upload' });
         }
 
-        if (!bibleId || typeof bibleId !== 'string') {
+        if (!bibleId || typeof bibleId !== 'string' || !mongoose.Types.ObjectId.isValid(bibleId)) {
             return res.status(400).json({ success: false, error: 'Missing or invalid bibleId' });
         }
 
         // Validate characterId if provided
         if (characterId && typeof characterId !== 'string') {
             return res.status(400).json({ success: false, error: 'characterId must be a string' });
+        }
+        if (characterId && !mongoose.Types.ObjectId.isValid(characterId)) {
+            return res.status(400).json({ success: false, error: 'Invalid characterId format' });
         }
 
         // Validate era if provided
@@ -117,6 +120,12 @@ router.get('/sources', async (req, res) => {
 
         if (!bibleId) {
             return res.status(400).json({ success: false, error: 'Missing bibleId' });
+        }
+        if (!mongoose.Types.ObjectId.isValid(bibleId as string)) {
+            return res.status(400).json({ success: false, error: 'Invalid bibleId format' });
+        }
+        if (characterId && !mongoose.Types.ObjectId.isValid(characterId as string)) {
+            return res.status(400).json({ success: false, error: 'Invalid characterId format' });
         }
 
         // Verify access

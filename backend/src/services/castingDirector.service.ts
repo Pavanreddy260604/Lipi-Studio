@@ -3,6 +3,7 @@ import { Bible } from '../models/Bible';
 import { aiServiceManager } from './aiManager/index.js';
 import { JSONHelper } from './parser/jsonHelper.js';
 import mongoose from 'mongoose';
+import { escapeRegExp } from '../utils/security.js';
 
 function getLevenshteinDistance(a: string, b: string): number {
     const an = a ? a.length : 0;
@@ -94,7 +95,7 @@ export class CastingDirectorService {
 
                 const exists = await Character.findOne({
                     bibleId: new mongoose.Types.ObjectId(bibleId),
-                    name: { $regex: new RegExp(`^${normalizedName}$`, 'i') }
+                    name: { $regex: new RegExp(`^${escapeRegExp(normalizedName)}$`, 'i') }
                 });
 
                 if (!exists) {
@@ -144,7 +145,7 @@ JSON Schema:
                         if (parsed.traits) profile.traits = parsed.traits;
                         if (parsed.motivation) profile.motivation = parsed.motivation;
                     } catch (parseErr: any) {
-                        console.error(`[CastingDirector] Failed to parse generated profile JSON for ${name}:`, parseErr.message);
+                        console.error('[CastingDirector] Failed to parse generated profile JSON for %s:', name, parseErr.message);
                     }
 
                     const newChar = new Character({
@@ -161,20 +162,20 @@ JSON Schema:
                     });
 
                     await newChar.save();
-                    console.log(`[CastingDirector] Successfully created profile for character: ${name}`);
+                    console.log('[CastingDirector] Successfully created profile for character:', name);
                     
                     try {
                         const { loreSyncService } = await import('./loreSync.service.js');
                         await loreSyncService.syncCharacter(newChar);
-                        console.log(`[CastingDirector] Successfully synchronized character ${name} with Lore Graph`);
+                        console.log('[CastingDirector] Successfully synchronized character %s with Lore Graph', name);
                     } catch (loreErr: any) {
-                        console.error(`[CastingDirector] Lore sync failed for ${name}:`, loreErr.message);
+                        console.error('[CastingDirector] Lore sync failed for %s:', name, loreErr.message);
                     }
 
                     syncedNames.push(name);
                 }
             } catch (err: any) {
-                console.error(`[CastingDirector] Error syncing character ${name}:`, err.message);
+                console.error('[CastingDirector] Error syncing character %s:', name, err.message);
             }
         }
 

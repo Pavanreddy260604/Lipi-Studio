@@ -59,7 +59,7 @@ export class AssistantRagService {
                     clearTimeout(timeoutId!);
                     return { ...query, embedding };
                 } catch (err) {
-                    console.warn(`[AssistantRAG] Embedding generation failed or timed out for query: ${query.text.substring(0, 50)}...`, err);
+                    console.warn('[AssistantRAG] Embedding generation failed or timed out for query:', query.text.substring(0, 50), '...', err);
                     return null;
                 }
             })

@@ -1,5 +1,6 @@
 import { Bible } from '../../models/Bible';
 import { Scene } from '../../models/scene/index.js';
+import mongoose from 'mongoose';
 import { aiServiceManager } from '../aiManager/index.js';
 import { projectContextService } from '../projectContext/index.js';
 import { buildBeatSheetPrompt } from '../../prompts/hollywood/index.js';
@@ -73,7 +74,9 @@ export async function generateBlockBeatSheet(bibleId: string, startScene: number
 }
 
 export async function generateBeatSheet(request: any, samples: any[], cast: any[]): Promise<any> {
-    const bible = request.bibleId ? await Bible.findById(request.bibleId) : null;
+    const bible = request.bibleId && mongoose.Types.ObjectId.isValid(request.bibleId)
+        ? await Bible.findById(request.bibleId)
+        : null;
     let prompt = BEAT_SHEET_PROMPT
         .replace('{{idea}}', request.idea)
         .replace('{{genre}}', request.genre || 'Drama')

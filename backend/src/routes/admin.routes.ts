@@ -207,7 +207,7 @@ router.delete('/master-scripts/:id', verifyScriptOwnership, async (req, res) => 
         await adminService.deleteMasterScript(req.params.id);
         res.json({ success: true, data: { message: 'Master script deleted successfully' } });
     } catch (error: any) {
-        console.error(`[AdminAPI] Failed to delete script ${req.params.id}:`, error);
+        console.error('[AdminAPI] Failed to delete script %s:', req.params.id, error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
