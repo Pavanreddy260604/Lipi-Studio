@@ -1,0 +1,87 @@
+name: AWS EC2 Continuous Deployment
+
+on:
+  push:
+    branches:
+      - main  # Triggers the pipeline on push to the main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout Repository Code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js Environment
+      - name: Setup Node.js (v20)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: |
+            frontend/package-lock.json
+            backend/package-lock.json
+
+      # Step 3: Install & Compile Frontend Assets
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      # Step 4: Install & Compile Backend Services
+      # Note: We bypass running tests during production compile if they depend on local database connections.
+      - name: Build Backend
+        run: |
+          cd backend
+          npm install
+          npx tsc
+
+      # Step 5: Configure SSH Key for secure tunnel
+      - name: Configure SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_IP }} >> ~/.ssh/known_hosts
+
+      # Step 6: Deploy Frontend static assets to Server (Rsync for incremental sync)
+      - name: Deploy Frontend Assets
+        run: |
+          # Sync built dist folder to home directory first
+          rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa" frontend/dist/ ubuntu@${{ secrets.EC2_IP }}:~/app/frontend/dist/
+
+      # Step 7: Deploy Backend compiled files to Server
+      - name: Deploy Backend Files
+        run: |
+          # Sync package files and compiled dist folder, excluding source code and dev folders
+          rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa" \
+            --exclude='node_modules' \
+            --exclude='src' \
+            --exclude='.env' \
+            --exclude='*.ts' \
+            backend/ ubuntu@${{ secrets.EC2_IP }}:~/app/backend/
+
+      # Step 8: Remote SSH Execution (Restart services and clean up permissions)
+      - name: Execute Remote Deployment Commands
+        run: |
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_IP }} << 'EOF'
+            # 1. Update backend production dependencies
+            cd ~/app/backend
+            npm install --production
+
+            # 2. Copy frontend assets to the targeted web directory securely
+            sudo mkdir -p /var/www/script-editor/dist
+            sudo cp -r ~/app/frontend/dist/* /var/www/script-editor/dist/
+            sudo chown -R www-data:www-data /var/www/script-editor/dist
+
+            # 3. Restart the Backend Systemd Service daemon
+            sudo systemctl restart script-editor-backend
+
+            # 4. Reload Nginx to clear cache & apply updates
+            sudo systemctl reload nginx
+            
+            echo "CI/CD Deployment successful!"
+          EOF

@@ -1,0 +1,20 @@
+# Security Keys
+*.pem
+*.key
+
+# Environment Variables
+.env
+.env.local
+.env.production
+.env.development
+
+# Dependency directories
+node_modules/
+dist/
+build/
+
+# Local databases & systems
+qdrant_data/
+.superpowers/
+.crush/
+.playwright-mcp/

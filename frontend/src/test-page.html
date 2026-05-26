@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Crystal Design System Test</title>
+  <link rel="stylesheet" href="./index.css">
+  <style>
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--space-4);
+      margin: var(--space-4);
+    }
+    
+    .test-section {
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+    }
+    
+    .color-swatch {
+      display: inline-block;
+      width: 100px;
+      height: 100px;
+      border-radius: var(--radius-md);
+      margin: var(--space-2);
+    }
+    
+    .theme-toggle-container {
+      display: flex;
+      justify-content: center;
+      margin: var(--space-4);
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="page-header">
+      <h1>Project Crystal Design System</h1>
+      <button class="theme-toggle" aria-label="Toggle theme"></button>
+    </header>
+    
+    <div class="theme-toggle-container">
+      <button class="theme-toggle" aria-label="Toggle theme"></button>
+    </div>
+    
+    <div class="test-grid">
+      <section class="test-section">
+        <h2>Typography</h2>
+        <h1>Heading 1</h1>
+        <h2>Heading 2</h2>
+        <h3>Heading 3</h3>
+        <p class="display-text">Display Text</p>
+        <p>This is a paragraph with <strong>strong</strong> and <em>emphasized</em> text.</p>
+        <p class="text-sm">Small text</p>
+        <p class="text-xs">Extra small text</p>
+      </section>
+      
+      <section class="test-section">
+        <h2>Colors</h2>
+        <div class="color-swatch" style="background: var(--bg-base);"></div>
+        <div class="color-swatch" style="background: var(--bg-elevated);"></div>
+        <div class="color-swatch" style="background: var(--brand-primary);"></div>
+        <div class="color-swatch" style="background: var(--status-success);"></div>
+        <div class="color-swatch" style="background: var(--status-warning);"></div>
+        <div class="color-swatch" style="background: var(--status-error);"></div>
+      </section>
+      
+      <section class="test-section">
+        <h2>Buttons</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-2) 0;">
+          <button class="btn btn-primary">Primary</button>
+          <button class="btn btn-secondary">Secondary</button>
+          <button class="btn btn-ghost">Ghost</button>
+          <button class="btn btn-danger">Danger</button>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-2) 0;">
+          <button class="btn btn-sm btn-primary">Small</button>
+          <button class="btn btn-primary">Default</button>
+          <button class="btn btn-lg btn-primary">Large</button>
+        </div>
+      </section>
+      
+      <section class="test-section">
+        <h2>Form Elements</h2>
+        <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+          <input class="input" type="text" placeholder="Text input">
+          <input class="input" type="text" placeholder="Disabled input" disabled>
+          <button class="btn btn-primary">Submit</button>
+        </div>
+      </section>
+      
+      <section class="test-section">
+        <h2>Components</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-2) 0;">
+          <span class="badge badge-subtle">Subtle</span>
+          <span class="badge badge-brand">Brand</span>
+          <span class="badge badge-success">Success</span>
+          <span class="badge badge-warning">Warning</span>
+          <span class="badge badge-error">Error</span>
+        </div>
+        <div class="divider"></div>
+        <div class="card card-interactive" style="padding: var(--space-4);">
+          <h3>Card Component</h3>
+          <p>This is a card component with interactive states.</p>
+        </div>
+      </section>
+      
+      <section class="test-section">
+        <h2>Glassmorphism</h2>
+        <div class="glass-panel" style="padding: var(--space-4); margin: var(--space-2) 0;">
+          <h3>Glass Panel</h3>
+          <p>This is a glass panel component.</p>
+        </div>
+        <div class="premium-card" style="padding: var(--space-4); margin: var(--space-2) 0;">
+          <h3>Premium Card</h3>
+          <p>This is a premium card component.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+  
+  <script src="./scripts/theme-init.js"></script>
+</body>
+</html>

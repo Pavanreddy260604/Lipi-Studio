@@ -1,0 +1,266 @@
+/* 
+   THE INKWELL: STUDIO MODULE 
+   Paper-like screenplay editor — simulates physical script pages.
+*/
+
+:root {
+    --paper-cream: #f5f0e8;
+    --paper-light: #faf7f0;
+    --paper-edge: #e8e0d0;
+    --paper-shadow: rgba(0, 0, 0, 0.08);
+    --paper-shadow-deep: rgba(0, 0, 0, 0.04);
+    --ink: #1a1a1a;
+    --ink-muted: #555;
+    --ink-faint: #aaa;
+    --script-font: 'Courier Prime', 'Courier New', Courier, monospace;
+    --page-width: 816px;
+    --page-min-height: 1056px;
+    --margin-left: 96px;
+    --margin-right: 64px;
+    --margin-top: 64px;
+    --margin-bottom: 64px;
+}
+
+/* Desk surface behind the paper */
+.studio-desk {
+    background: #2a2520;
+    background-image:
+        radial-gradient(ellipse at 50% 0%, rgba(60, 50, 40, 0.4) 0%, transparent 70%),
+        radial-gradient(ellipse at 50% 100%, rgba(40, 35, 30, 0.6) 0%, transparent 60%);
+    min-height: 100%;
+}
+
+/* Paper page — infinite scroll, grows with content */
+.script-page {
+    width: var(--page-width);
+    min-height: 60vh;
+    background: var(--paper-light);
+    background-image:
+        linear-gradient(135deg, var(--paper-cream) 0%, var(--paper-light) 40%, var(--paper-cream) 100%);
+    margin: 0 auto;
+    padding: var(--margin-top) var(--margin-right) var(--margin-bottom) var(--margin-left);
+    position: relative;
+    box-shadow:
+        0 1px 4px var(--paper-shadow),
+        0 4px 16px var(--paper-shadow),
+        0 12px 40px var(--paper-shadow-deep),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    border-radius: 2px;
+    font-family: var(--script-font);
+    font-size: 12pt;
+    line-height: 1.4;
+    color: var(--ink);
+}
+
+/* Subtle paper texture overlay */
+.script-page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+    pointer-events: none;
+    border-radius: 2px;
+}
+
+/* Top page edge (slight curl) */
+.script-page::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(180deg, var(--paper-edge) 0%, transparent 100%);
+    border-radius: 2px 2px 0 0;
+}
+
+/* Textarea styling */
+.script-textarea {
+    width: 100%;
+    background: transparent;
+    outline: none;
+    resize: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    min-height: 60vh;
+}
+
+/* Page number */
+.script-page-number {
+    position: absolute;
+    bottom: 32px;
+    right: var(--margin-right);
+    font-family: var(--script-font);
+    font-size: 12pt;
+    color: var(--ink);
+    opacity: 0.7;
+    letter-spacing: 0.02em;
+}
+
+/* Screenplay element styles */
+.script-slugline {
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    padding-left: 0;
+}
+
+.script-action {
+    margin-bottom: 12px;
+    padding-left: 0;
+}
+
+.script-character {
+    text-transform: uppercase;
+    margin-top: 18px;
+    margin-bottom: 4px;
+    padding-left: 140px;
+}
+
+.script-parenthetical {
+    font-style: italic;
+    margin-bottom: 2px;
+    padding-left: 104px;
+    max-width: 320px;
+}
+
+.script-dialogue {
+    padding-left: 64px;
+    max-width: 420px;
+    margin-bottom: 10px;
+}
+
+.script-transition {
+    text-transform: uppercase;
+    text-align: right;
+    padding-right: 0;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+/* Page break indicator (visible between pages in multi-page view) */
+.script-page-break {
+    height: 20px;
+    position: relative;
+    margin: 0 auto;
+    width: var(--page-width);
+}
+
+.script-page-break::before {
+    content: '';
+    position: absolute;
+    left: 40px;
+    right: 40px;
+    top: 50%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--paper-edge), transparent);
+}
+
+/* Bottom paper stack (gives depth — more pages below) */
+.script-page-stack {
+    position: relative;
+}
+
+.script-page-stack .script-page {
+    position: relative;
+    z-index: 1;
+}
+
+.script-page-stack::before,
+.script-page-stack::after {
+    content: '';
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    height: 4px;
+    background: var(--paper-edge);
+    border-radius: 0 0 2px 2px;
+    bottom: -3px;
+    z-index: 0;
+    opacity: 0.4;
+}
+
+.script-page-stack::after {
+    left: 4px;
+    right: 4px;
+    bottom: -6px;
+    height: 3px;
+    opacity: 0.2;
+}
+
+/* Studio UI — minimal, floating on the desk */
+.studio-sidebar {
+    background: rgba(42, 37, 32, 0.95);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    height: 100%;
+}
+
+.studio-panel-title {
+    font-family: var(--script-font);
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.3);
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.studio-assistant-bubble {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ─── Light Theme Overrides ─── */
+.light .studio-desk {
+    background: oklch(0.82 0.015 55);
+    background-image:
+        radial-gradient(ellipse at 50% 0%, oklch(0.85 0.015 55) 0%, transparent 70%),
+        radial-gradient(ellipse at 50% 100%, oklch(0.78 0.015 55) 0%, transparent 60%);
+}
+
+.light .script-page {
+    background: #ffffff;
+    background-image:
+        linear-gradient(135deg, #fefcf7 0%, #ffffff 40%, #fefcf7 100%);
+    box-shadow:
+        0 1px 3px oklch(0.1 0.01 50 / 0.08),
+        0 4px 12px oklch(0.1 0.01 50 / 0.06),
+        0 10px 30px oklch(0.1 0.01 50 / 0.04),
+        inset 0 0 0 1px oklch(0.1 0.01 50 / 0.04);
+}
+
+.light .script-page::before {
+    opacity: 0.015;
+}
+
+.light .script-page::after {
+    background: linear-gradient(180deg, #e8e4dc 0%, transparent 100%);
+}
+
+.light .script-page-stack::before,
+.light .script-page-stack::after {
+    background: oklch(0.1 0.01 50 / 0.06);
+}
+
+.light .studio-sidebar {
+    background: oklch(0.985 0.006 65 / 0.98);
+    border-right: 1px solid oklch(0.1 0.01 50 / 0.08);
+}
+
+.light .studio-panel-title {
+    color: oklch(0.4 0.006 50);
+    border-bottom: 1px solid oklch(0.1 0.01 50 / 0.08);
+}
+
+.light .studio-assistant-bubble {
+    background: oklch(0.1 0.01 50 / 0.03);
+    border: 1px solid oklch(0.1 0.01 50 / 0.08);
+    color: oklch(0.15 0.008 50);
+}
