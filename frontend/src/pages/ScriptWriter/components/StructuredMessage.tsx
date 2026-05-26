@@ -270,7 +270,7 @@ const METADATA_SECTIONS = new Set(['THINKING', 'RESEARCH_DISCLOSURE', 'CHARACTER
 
 function renderTextWithImages(text: string) {
     const regex = /!\[(.*?)\]\((.*?)\)/g;
-    const parts: { type: 'image'; alt: string; url: string }[] | string[] = [];
+    const parts: ({ type: 'image'; alt: string; url: string } | string)[] = [];
     let lastIndex = 0;
     let match;
 
