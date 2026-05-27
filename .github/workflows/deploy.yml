@@ -52,13 +52,13 @@ jobs:
       # Step 5.5: Ensure target directories exist on remote
       - name: Prepare Remote Directories
         run: |
-          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_IP }} "mkdir -p ~/app/frontend/dist ~/app/backend"
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_IP }} "mkdir -p ~/script-editor/frontend/dist ~/script-editor/backend"
 
       # Step 6: Deploy Frontend static assets to Server (Rsync for incremental sync)
       - name: Deploy Frontend Assets
         run: |
-          # Sync built dist folder to home directory first
-          rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa" frontend/dist/ ubuntu@${{ secrets.EC2_IP }}:~/app/frontend/dist/
+          # Sync built dist folder directly to the Nginx root directory
+          rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa" frontend/dist/ ubuntu@${{ secrets.EC2_IP }}:~/script-editor/frontend/dist/
 
       # Step 7: Deploy Backend compiled files to Server
       - name: Deploy Backend Files
@@ -69,25 +69,20 @@ jobs:
             --exclude='src' \
             --exclude='.env' \
             --exclude='*.ts' \
-            backend/ ubuntu@${{ secrets.EC2_IP }}:~/app/backend/
+            backend/ ubuntu@${{ secrets.EC2_IP }}:~/script-editor/backend/
 
-      # Step 8: Remote SSH Execution (Restart services and clean up permissions)
+      # Step 8: Remote SSH Execution (Restart PM2 and reload Nginx)
       - name: Execute Remote Deployment Commands
         run: |
           ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_IP }} << 'EOF'
             # 1. Update backend production dependencies
-            cd ~/app/backend
+            cd ~/script-editor/backend
             npm install --production
 
-            # 2. Copy frontend assets to the targeted web directory securely
-            sudo mkdir -p /var/www/script-editor/dist
-            sudo cp -r ~/app/frontend/dist/* /var/www/script-editor/dist/
-            sudo chown -R www-data:www-data /var/www/script-editor/dist
+            # 2. Restart the Backend PM2 process
+            pm2 restart script-backend
 
-            # 3. Restart the Backend Systemd Service daemon
-            sudo systemctl restart script-editor-backend
-
-            # 4. Reload Nginx to clear cache & apply updates
+            # 3. Reload Nginx to clear cache & apply updates
             sudo systemctl reload nginx
             
             echo "CI/CD Deployment successful!"
