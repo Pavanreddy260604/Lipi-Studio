@@ -11,6 +11,7 @@ import cluster from 'cluster';
 import { connectDB } from './config/db.js';
 import { apiLimiter, aiLimiter, aiCritiqueLimiter } from './middleware/rateLimiter.js';
 import { redisCache } from './services/redisCache.service.js';
+import { startMetricsCollection, metricsMiddleware, metricsHandler } from './services/metrics.js';
 
 dotenv.config();
 
@@ -41,9 +42,11 @@ const validateEnv = () => {
 };
 
 validateEnv();
+startMetricsCollection();
 
 const app = express();
 app.set('trust proxy', 1);
+app.use(metricsMiddleware);
 const PORT = process.env.PORT || 5003;
 
 // Middleware
@@ -90,6 +93,9 @@ app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 // Security Sanitizers
 app.use(mongoSanitize()); // Prevent NoSQL injection
 app.use(xssSanitizer); // Prevent XSS by stripping malicious scripts
+
+// Prometheus Metrics Scraper Endpoint
+app.get('/metrics', metricsHandler);
 
 // Health Check
 app.get('/health', async (_req, res) => {
