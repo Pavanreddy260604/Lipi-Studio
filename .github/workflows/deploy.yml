@@ -74,7 +74,11 @@ jobs:
       # Step 8: Remote SSH Execution (Restart PM2 and reload Nginx)
       - name: Execute Remote Deployment Commands
         run: |
-          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_IP }} << 'EOF'
+          # Get current git commit count on the runner
+          COMMIT_COUNT=$(git rev-list --count HEAD)
+          
+          # Pass COMMIT_COUNT to the remote shell using bash -s
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_IP }} "export COMMIT_COUNT=$COMMIT_COUNT; bash -s" << 'EOF'
             # 1. Update backend production dependencies
             cd ~/script-editor/backend
             npm install --production
@@ -84,6 +88,10 @@ jobs:
 
             # 3. Reload Nginx to clear cache & apply updates
             sudo systemctl reload nginx
+            
+            # 4. Update the Git Deploy metrics for Prometheus/Node Exporter
+            echo -e "# HELP git_commits_total Total number of Git commits.\n# TYPE git_commits_total counter\ngit_commits_total $COMMIT_COUNT" > /tmp/git.prom
+            sudo mv /tmp/git.prom /var/lib/prometheus/node-exporter/git.prom
             
             echo "CI/CD Deployment successful!"
           EOF
