@@ -53,7 +53,15 @@ const PORT = process.env.PORT || 5003;
 app.use(helmet());
 app.use(compression({
     filter: (req: express.Request, res: express.Response) => {
-        if (req.headers['x-no-compression'] || res.getHeader('x-no-compression')) {
+        const isStreamingPath = req.path.includes('/assisted-edit') || 
+                                req.path.includes('/generate') || 
+                                req.path.includes('/stream') ||
+                                req.path.includes('/revise');
+                                
+        if (isStreamingPath || 
+            req.headers['x-no-compression'] || 
+            res.getHeader('x-no-compression') || 
+            res.getHeader('Content-Type') === 'text/event-stream') {
             return false;
         }
         return compression.filter(req, res);
