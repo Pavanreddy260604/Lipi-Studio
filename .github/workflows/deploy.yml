@@ -49,6 +49,11 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_IP }} >> ~/.ssh/known_hosts
 
+      # Step 5.5: Ensure target directories exist on remote
+      - name: Prepare Remote Directories
+        run: |
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_IP }} "mkdir -p ~/app/frontend/dist ~/app/backend"
+
       # Step 6: Deploy Frontend static assets to Server (Rsync for incremental sync)
       - name: Deploy Frontend Assets
         run: |
