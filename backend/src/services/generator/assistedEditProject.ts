@@ -259,7 +259,7 @@ export async function* assistProject(bibleId: string, instruction: string, optio
             [{ role: 'user', content: prompt }],
             undefined,
             {
-                model: options.model || 'thinking',
+                model: options.model || 'balanced',
                 tools: selectToolDeclarations(['propose_edit', 'query_lore', 'critique_scene', 'generate_outline']),
                 webSearch: false,
                 reasoning_effort: 'default',

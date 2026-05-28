@@ -45,7 +45,7 @@ function resolveModelForTask(taskName: string, requestedModel?: string): string 
     if (requestedModel && requestedModel in TASK_MODEL_ROUTES) {
         return TASK_MODEL_ROUTES[requestedModel] || requestedModel;
     }
-    return requestedModel || 'thinking';
+    return requestedModel || 'balanced';
 }
 
 function getRlhfBoostedTemperature(feedbackCount: number, baseTemp: number): number {

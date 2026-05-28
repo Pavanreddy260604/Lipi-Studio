@@ -7,6 +7,7 @@ import type { EditorSelection, PendingFixState } from './types';
 import { getErrorMessage } from './utils';
 
 import { useScriptWriter } from '../../contexts/ScriptWriterContext';
+import { useChatStore } from '../../stores/chatStore';
 
 interface UseSceneAssistantProps {
     activeScene: Scene | null;
@@ -60,6 +61,8 @@ export function useSceneAssistant({
                 charCount: editorSelection.charCount
             } : undefined;
 
+            const selectedModel = useChatStore.getState().selectedModel;
+
             await scriptWriterApi.assistedEditStream(
                 activeScene._id,
                 instruction,
@@ -85,7 +88,8 @@ export function useSceneAssistant({
                     target,
                     selection: selectionData,
                     currentContent: editorContent,
-                    transliteration: activeProject?.transliteration || false
+                    transliteration: activeProject?.transliteration || false,
+                    model: selectedModel || 'balanced'
                 },
                 abortController.signal
             );

@@ -291,7 +291,7 @@ export async function* assistedEdit(sceneId: string, instruction: string, option
             [{ role: 'user', content: prompt, images: sceneImages }],
             undefined,
             {
-                model: options.model || 'thinking',
+                model: options.model || 'balanced',
                 tools: selectToolDeclarations(['propose_edit', 'query_lore', 'critique_scene', 'generate_outline']),
                 webSearch: false,
                 reasoning_effort: 'default',
