@@ -6,6 +6,15 @@ import { exportService } from '../../services/export.service.js';
 import { projectStatusService } from '../../services/projectStatus/index.js';
 import { assertBibleAccess, normalizeAssistantPreferences } from './utils.js';
 
+const VALID_GENRES = ['Drama', 'Sci-Fi', 'Comedy', 'Thriller', 'Horror', 'Action', 'Romance', 'Documentary', 'Fantasy', 'Mystery'];
+
+/** Normalize genre to title-case to match the Mongoose enum (e.g. 'thriller' → 'Thriller') */
+function normalizeGenre(raw: string | undefined): string {
+    if (!raw) return 'Drama';
+    const match = VALID_GENRES.find(g => g.toLowerCase() === raw.toLowerCase().trim());
+    return match || raw; // Pass through unknown values so Mongoose validation catches them
+}
+
 export async function listProjects(req: Request, res: Response, _next: NextFunction) {
     const userId = req.userId;
     try {
@@ -43,7 +52,7 @@ export async function createProject(req: Request, res: Response, _next: NextFunc
             : normalizeAssistantPreferences(rawPreferences);
         if (!assistantPreferences) return res.status(400).json({ error: 'Invalid assistantPreferences payload' });
         const newBible = await Bible.create({
-            userId: req.userId, title, logline: logline || '', genre: genre || 'Drama',
+            userId: req.userId, title, logline: logline || '', genre: normalizeGenre(genre),
             tone: tone || 'Serious', language: language || 'English', rules: [],
             storyResources: Array.isArray(storyResources) ? storyResources.map(r => ({
                 title: typeof r.title === 'string' && r.title.trim() ? r.title.trim() : 'Untitled Resource',
@@ -80,8 +89,10 @@ export async function updateProject(req: Request, res: Response, _next: NextFunc
         const updateData: Record<string, unknown> = {};
         for (const field of allowedFields) { if (req.body[field] !== undefined) updateData[field] = req.body[field]; }
         if (updateData.title === '') return res.status(400).json({ error: 'Title cannot be empty' });
-        const validGenres = ['Drama', 'Sci-Fi', 'Comedy', 'Thriller', 'Horror', 'Action', 'Romance', 'Documentary'];
-        if (updateData.genre && !validGenres.includes(updateData.genre as string)) return res.status(400).json({ error: `Invalid genre. Allowed: ${validGenres.join(', ')}` });
+        if (updateData.genre) {
+            updateData.genre = normalizeGenre(updateData.genre as string);
+            if (!VALID_GENRES.find(g => g === updateData.genre)) return res.status(400).json({ error: `Invalid genre. Allowed: ${VALID_GENRES.join(', ')}` });
+        }
         if (updateData.rules && !Array.isArray(updateData.rules)) return res.status(400).json({ error: 'Rules must be an array' });
         if (req.body.assistantPreferences !== undefined) {
             try {
