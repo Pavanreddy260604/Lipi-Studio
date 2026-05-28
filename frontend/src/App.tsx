@@ -15,6 +15,7 @@ const Settings = lazy(() => import('./pages/Settings').then(m => ({ default: m.S
 const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 const LandingPage = lazy(() => import('./pages/LandingPage').then(m => ({ default: m.LandingPage })));
 const DocsPage = lazy(() => import('./pages/DocsPage').then(m => ({ default: m.DocsPage })));
+const TutorialPage = lazy(() => import('./pages/TutorialPage').then(m => ({ default: m.TutorialPage })));
 
 import { useAuthStore } from './stores/authStore';
 import { useUIStore } from './stores/uiStore';
@@ -439,6 +440,17 @@ function App() {
                   <Suspense fallback={<LoadingScreen />}>
                     <DocsPage />
                   </Suspense>
+                }
+              />
+
+              <Route
+                path="/tutorial"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingScreen />}>
+                      <TutorialPage />
+                    </Suspense>
+                  </ProtectedRoute>
                 }
               />
 

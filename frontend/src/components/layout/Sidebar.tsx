@@ -51,6 +51,7 @@ interface NavItem {
 const scriptNavItems: NavItem[] = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
     { icon: MessageSquare, label: 'AI Assistant', href: '/chat' },
+    { icon: GraduationCap, label: 'Lipi Academy', href: '/tutorial' },
 ];
 
 const isPathActive = (pathname: string, href: string) => {
