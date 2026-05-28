@@ -145,13 +145,15 @@ const StudioEditorInner = forwardRef<StudioEditorHandle, StudioEditorProps>(({
     }, 150);
   };
 
-  // Sync with parent state changes only (external updates like AI or scene change)
+  // Cancel any pending debounced change callbacks when the active scene changes
   useEffect(() => {
-    if (editorContent !== lastSentValueRef.current) {
-      setLocalVal(editorContent);
-      lastSentValueRef.current = editorContent;
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
     }
-  }, [editorContent]);
+    setLocalVal(editorContent);
+    lastSentValueRef.current = editorContent;
+  }, [activeScene?._id, editorContent]);
 
   // Clean up timer on unmount
   useEffect(() => {

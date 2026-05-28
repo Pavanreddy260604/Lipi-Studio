@@ -111,13 +111,9 @@ export function ScriptWriterProvider({ children }: { children: ReactNode }) {
             }
             return;
         }
-        
-        if (isGenerating || isCritiquing || isAiThinking || hasUnsavedChanges) {
-            const confirmed = window.confirm('You have an active process or unsaved changes. Switching scenes now may result in data loss. Continue?');
-            if (!confirmed) return;
-        }
 
         cleanupActiveProcesses();
+        setHasUnsavedChanges(false); // Reset unsaved changes immediately on scene switch
         setActiveScene(scene);
         if (scene) {
             setUiState(prev => ({ ...prev, viewMode: 'editor' }));

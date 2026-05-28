@@ -289,8 +289,8 @@ const StructurePanelInner = ({
                                     isEditing={editingSceneId === scene._id}
                                     onSelect={() => {
                                         if (activeScene?._id === scene._id) return;
-                                        if (isGenerating || isCritiquing || isAiThinking || hasUnsavedChanges) {
-                                            const confirmed = window.confirm('You have an active process or unsaved changes. Leaving this scene may result in data loss. Continue?');
+                                        if (isGenerating || isCritiquing || isAiThinking) {
+                                            const confirmed = window.confirm('You have an active generation or critique process. Switching scenes now may cancel it. Continue?');
                                             if (!confirmed) return;
                                         }
                                         if (!editingSceneId && projectId) {
