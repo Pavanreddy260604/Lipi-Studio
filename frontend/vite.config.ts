@@ -18,11 +18,13 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          markdown: ['react-markdown'],
+          markdown: ['react-markdown', 'remark-gfm'],
+          highlighter: ['react-syntax-highlighter'],
           editor: ['@monaco-editor/react'],
           motion: ['framer-motion'],
           charts: ['recharts'],
           icons: ['lucide-react'],
+          validation: ['zod', 'react-hook-form', '@hookform/resolvers'],
           dnd: ['@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
         },
       },

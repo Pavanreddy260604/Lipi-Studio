@@ -1,11 +1,11 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
-// eager load auth components
-import { Login } from './pages/Login';
-import { Register } from './pages/Register';
-import { ForgotPassword } from './pages/ForgotPassword';
-import { ResetPassword } from './pages/ResetPassword';
+// lazy load auth components
+const Login = lazy(() => import('./pages/Login').then(m => ({ default: m.Login })));
+const Register = lazy(() => import('./pages/Register').then(m => ({ default: m.Register })));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword').then(m => ({ default: m.ForgotPassword })));
+const ResetPassword = lazy(() => import('./pages/ResetPassword').then(m => ({ default: m.ResetPassword })));
 
 // lazy load script editor pages
 const ScriptWriterDashboard = lazy(() => import('./pages/ScriptWriter/ScriptWriterDashboard').then(m => ({ default: m.ScriptWriterDashboard })));
@@ -25,7 +25,7 @@ import { ToastContainer } from './components/ui/Toast';
 import { VerificationBanner, VerificationOverlay } from './components/ui';
 import { AIProvider } from './contexts/AIContext';
 import { ScriptWriterProvider } from './contexts/ScriptWriterContext';
-import { GlobalAIWidget, GlobalAIWidgetWithAuth } from './components/GlobalAIWidget';
+const GlobalAIWidgetWithAuth = lazy(() => import('./components/GlobalAIWidget').then(m => ({ default: m.GlobalAIWidgetWithAuth })));
 import { useThemeStore } from './stores/themeStore';
 import { useMobile } from './hooks/useMobile';
 import { MobileGate } from './components/MobileGate';
@@ -333,7 +333,9 @@ function App() {
                 path="/login"
                 element={
                   <PublicRoute>
-                    <Login />
+                    <Suspense fallback={<LoadingScreen />}>
+                      <Login />
+                    </Suspense>
                   </PublicRoute>
                 }
               />
@@ -341,7 +343,9 @@ function App() {
                 path="/register"
                 element={
                   <PublicRoute>
-                    <Register />
+                    <Suspense fallback={<LoadingScreen />}>
+                      <Register />
+                    </Suspense>
                   </PublicRoute>
                 }
               />
@@ -349,7 +353,9 @@ function App() {
                 path="/forgot-password"
                 element={
                   <PublicRoute>
-                    <ForgotPassword />
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ForgotPassword />
+                    </Suspense>
                   </PublicRoute>
                 }
               />
@@ -357,7 +363,9 @@ function App() {
                 path="/reset-password"
                 element={
                   <PublicRoute>
-                    <ResetPassword />
+                    <Suspense fallback={<LoadingScreen />}>
+                      <ResetPassword />
+                    </Suspense>
                   </PublicRoute>
                 }
               />
@@ -443,7 +451,9 @@ function App() {
                 </ProtectedRoute>
               } />
             </Routes>
-            <GlobalAIWidgetWithAuth />
+            <Suspense fallback={null}>
+              <GlobalAIWidgetWithAuth />
+            </Suspense>
           </BrowserRouter>
         </ScriptWriterProvider>
       </AIProvider>

@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useChatStore } from '../../stores/chatStore';
-import { ShortcutsModal } from '../ui/ShortcutsModal';
+const ShortcutsModal = lazy(() => import('../ui/ShortcutsModal').then(m => ({ default: m.ShortcutsModal })));
 import { useMobile } from '../../hooks/useMobile';
 import { cn } from '../../lib/utils';
 import { BottomNav } from './BottomNav';
@@ -116,7 +116,9 @@ export function Layout({ children, banner }: LayoutProps) {
             </motion.main>
 
             {showShortcuts && (
-                <ShortcutsModal isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
+                <Suspense fallback={null}>
+                    <ShortcutsModal isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
+                </Suspense>
             )}
         </div>
     );
